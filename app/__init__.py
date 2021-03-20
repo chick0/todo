@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from io import StringIO
+from io import BytesIO
 
 from flask import Flask
 from flask import request
@@ -32,10 +32,10 @@ def create_app():
     @app.route("/robots.txt")
     def robots():
         return send_file(
-            StringIO("\n".join([
-                "User-agent: *",
-                "Allow: /$",
-                "Disallow: /",
+            BytesIO(b"\n".join([
+                b"User-agent: *",
+                b"Allow: /$",
+                b"Disallow: /",
             ])),
             mimetype="text/plain"
         )
