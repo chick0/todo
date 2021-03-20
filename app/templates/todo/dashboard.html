@@ -40,7 +40,7 @@
         const todo_items = document.querySelectorAll("li.td_item");
         for(var key in Object.keys(todo_items)){
             todo_items[key].addEventListener("click", function(e){
-                if(confirm("삭제할까요?")){
+                if(confirm("삭제하시겠습니까?")){
                     axios.get("{{ url_for('todo.pop') }}",{
                         params: {
                             idx: e.target.dataset.id
