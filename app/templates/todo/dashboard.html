@@ -11,7 +11,7 @@
         <ul>
         {% for item in todo.items %}
             <li class="list-group-item td_item" data-id="{{ item.idx }}">
-                {{ item.register|date }} {{ item.text }}
+                {{ item.register|date }}&nbsp;&nbsp;&nbsp;{{ item.text }}
             </li>
         {% endfor %}
         </ul>
