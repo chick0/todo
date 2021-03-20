@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="row">
+        <h3 class="display-3">Todo</h3>
+        <p class="lead">할 일 목록</p>
+    </div>
+
+    <div class="row py-5">
+        <p>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('member.login') }}">로그인</a>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('member.register') }}">회원가입</a>
+        </p>
+    </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="row">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="할일" id="todo">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" id="append">추가하기</button>
+            </div>
+        </div>
+
+        <ul>
+        {% for item in todo.items %}
+            <li class="list-group-item td_item" data-id="{{ item.idx }}">
+                {{ item.register|date }} {{ item.text }}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <div class="row py-5">
+        <div class="btn-group">
+            <a class="btn btn-secondary" href="{{ url_for('todo.dashboard', page=todo.prev_num) }}">이전 페이지</a>
+            <a class="btn btn-secondary" href="{{ url_for('todo.dashboard', page=todo.next_num) }}">다음 페이지</a>
+        </div>
+        <span class="lead">{{ todo.page }}/{{ todo.pages }}</span>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+    <script>
+        document.getElementById("append").addEventListener("click", function(){
+            let form = new FormData();
+            form.append("todo", document.getElementById("todo").value);
+
+            axios.post("{{ url_for('todo.append') }}", form).then(function(){
+                window.location.reload();
+            });
+        });
+    </script>
+    <script>
+        const todo_items = document.querySelectorAll("li.td_item");
+        for(var key in Object.keys(todo_items)){
+            todo_items[key].addEventListener("click", function(e){
+                if(confirm("삭제할까요?")){
+                    axios.get("{{ url_for('todo.pop') }}",{
+                        params: {
+                            idx: e.target.dataset.id
+                        }
+                    }).then(function(){
+                        window.location.reload();
+                    });
+                }
+            });
+        }
+    </script>
+{% endblock %}
