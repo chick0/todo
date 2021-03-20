@@ -33,6 +33,7 @@
 
             axios.post("{{ url_for('todo.append') }}", form).then(function(){
                 window.location.reload();
+                document.getElementById("todo").value = "";
             });
         });
     </script>
