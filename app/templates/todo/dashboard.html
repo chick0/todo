@@ -22,7 +22,6 @@
             <a class="btn btn-secondary" href="{{ url_for('todo.dashboard', page=todo.prev_num) }}">이전 페이지</a>
             <a class="btn btn-secondary" href="{{ url_for('todo.dashboard', page=todo.next_num) }}">다음 페이지</a>
         </div>
-        <span class="lead">{{ todo.page }}/{{ todo.pages }}</span>
     </div>
 {% endblock %}
 {% block script %}
