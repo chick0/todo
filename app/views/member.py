@@ -80,3 +80,34 @@ def register():
             return redirect(url_for(".register", e="ue"))
 
         return redirect(url_for(".login", login="need"))
+
+
+@bp.route("/update", methods=['GET', 'POST'])
+def update():
+    if session.get("user_idx", None) is None:
+        return redirect(url_for(".login", login="need"))
+
+    if request.method == "GET":
+        return render_template(
+            "member/update.html"
+        )
+    elif request.method == "POST":
+        password = request.form.get("password", "")
+        password2 = request.form.get("password2", "")
+
+        if len(password2) < 8:
+            return redirect(url_for(".update", e="pws"))
+
+        hashed_password = sha512(password.encode()).hexdigest()
+        hashed_password2 = sha512(password2.encode()).hexdigest()
+
+        member = Member.query.filter_by(
+            idx=session['user_idx'],
+            password=hashed_password
+        ).first()
+
+        member.password = hashed_password2
+        db.session.commit()
+
+        del session['user_idx']
+        return redirect(url_for(".login", login="need"))
