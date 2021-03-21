@@ -90,3 +90,17 @@ def pop():
         pass
 
     return "", 200
+
+
+@bp.route("/clear")
+def clear():
+    member = get_member()
+    if member is None:
+        return redirect(url_for("member.login", login="need"))
+
+    for todo in Todo.query.filter_by(owner=member.idx).all():
+        db.session.delete(todo)
+
+    db.session.commit()
+
+    return redirect(url_for(".dashboard"))
