@@ -18,6 +18,16 @@ bp = Blueprint(
 )
 
 
+@bp.route("/logout")
+def logout():
+    try:
+        del session['user_idx']
+    except KeyError:
+        pass
+
+    return redirect(url_for(".login", login="need"))
+
+
 @bp.route("/login", methods=['GET', 'POST'])
 def login():
     if session.get("user_idx", None) is not None:
