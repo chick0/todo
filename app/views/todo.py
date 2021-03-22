@@ -80,7 +80,8 @@ def pop():
         return "", 400
 
     todo = Todo.query.filter_by(
-        idx=idx
+        idx=idx,
+        owner=member.idx
     ).first()
 
     try:
