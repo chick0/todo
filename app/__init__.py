@@ -64,8 +64,6 @@ def create_app():
             blueprint=getattr(getattr(views, view_point), "bp")
         )
 
-    app.add_template_filter(lambda dt: dt.strftime("%Y-%m-%d"), "date")
-
     # 오류 핸들러
     app.register_error_handler(400, error.bad_request)
     app.register_error_handler(401, error.unauthorized)
