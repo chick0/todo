@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from json import dumps
 
 from flask import Blueprint
 from flask import request, session
 from flask import redirect, url_for
 from flask import render_template
-from sqlalchemy.orm.exc import UnmappedInstanceError
+from flask import Response
 
 from app import db
 from models import Member, Todo
@@ -53,7 +54,13 @@ def dashboard():
 def append():
     member = get_member()
     if member is None:
-        return "", 401
+        return Response(
+            status=401,
+            mimetype="application/json",
+            response=dumps({
+                "error": "인증 실패, 로그인이 필요합니다!"
+            })
+        )
 
     if len(request.form.get("todo", "")) != 0:
         todo = Todo()
@@ -63,34 +70,73 @@ def append():
         db.session.add(todo)
         db.session.commit()
 
-    return "", 200
+        return Response(
+            status=201,
+            mimetype="application/json",
+            response=dumps({
+                "alert": "추가 완료"
+            })
+        )
+    else:
+        return Response(
+            status=200,
+            mimetype="application/json",
+            response=dumps({
+                "alert": "추가 실패, 할 일을 입력해야 합니다"
+            })
+        )
 
 
 @bp.route("/pop")
 def pop():
     member = get_member()
     if member is None:
-        return "", 401
+        return Response(
+            status=401,
+            mimetype="application/json",
+            response=dumps({
+                "error": "인증 실패, 로그인이 필요합니다!"
+            })
+        )
 
     try:
         idx = int(request.args.get("idx", "-1"))
-        if idx == -1:
-            return "", 400
+
+        if idx <= 0:
+            raise ValueError
     except ValueError:
-        return "", 400
+        return Response(
+            status=400,
+            mimetype="application/json",
+            response=dumps({
+                "error": "잘못된 요청 입니다"
+            })
+        )
 
     todo = Todo.query.filter_by(
         idx=idx,
         owner=member.idx
     ).first()
 
-    try:
-        db.session.delete(todo)
-        db.session.commit()
-    except UnmappedInstanceError:
-        pass
+    if todo is None:
+        return Response(
+            status=404,
+            mimetype="application/json",
+            response=dumps({
+                "error": "삭제할 투두를 찾지 못했습니다"
+            })
+        )
 
-    return "", 200
+    db.session.delete(todo)
+    db.session.commit()
+
+    return Response(
+        status=200,
+        mimetype="application/json",
+        response=dumps({
+            "alert": "삭제 완료"
+        })
+    )
 
 
 @bp.route("/clear")

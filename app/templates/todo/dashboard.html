@@ -36,7 +36,8 @@
             let form = new FormData();
             form.append("todo", document.getElementById("todo").value);
 
-            axios.post("{{ url_for('todo.append') }}", form).then(function(){
+            axios.post("{{ url_for('todo.append') }}", form).then(function(e){
+                window.alert(e.data.alert);
                 window.location.reload();
                 document.getElementById("todo").value = "";
             });
@@ -51,8 +52,11 @@
                         params: {
                             idx: e.target.dataset.id
                         }
-                    }).then(function(){
+                    }).then(function(e){
+                        window.alert(e.data.alert);
                         window.location.reload();
+                    }).catch(function(e){
+                        window.alert(e.response.data.error);
                     });
                 }
             });
