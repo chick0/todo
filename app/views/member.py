@@ -8,7 +8,7 @@ from flask import render_template
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from models import Member
+from models import Member, Todo
 
 
 bp = Blueprint(
@@ -16,6 +16,40 @@ bp = Blueprint(
     import_name=__name__,
     url_prefix=f"/{__name__.split('.')[-1]}"
 )
+
+
+@bp.route("/leave", methods=['GET', 'POST'])
+def leave():
+    if session.get("user_idx", None) is None:
+        return redirect(url_for(".login", login="need"))
+
+    if request.method == "GET":
+        return render_template(
+            "member/leave.html"
+        )
+    elif request.method == "POST":
+        ok = request.form.get("ok", "off")
+
+        if ok == "on":
+            member = Member.query.filter_by(
+                idx=session['user_idx'],
+                email=sha384(request.form.get("email", "").encode()).hexdigest(),
+                password=sha512(request.form.get("password", "").encode()).hexdigest()
+            ).first()
+
+            if member is not None:
+                member.password = "#"
+
+                for todo in Todo.query.filter_by(owner=member.idx).all():
+                    db.session.delete(todo)
+
+                db.session.commit()
+
+                del session['user_idx']
+
+                return redirect(url_for("index.index"))
+
+        return redirect(url_for(".leave"))
 
 
 @bp.route("/logout")
