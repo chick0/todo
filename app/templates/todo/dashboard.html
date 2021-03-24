@@ -8,7 +8,7 @@
 
         <ul>
         {% for item in todo.items %}
-            <li class="list-group-item td_item" data-id="{{ item.idx }}" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ item.register }}">
+            <li class="list-group-item" data-id="{{ item.idx }}">
                 {{ item.text }}
             </li>
         {% endfor %}
@@ -32,12 +32,6 @@
 {% endblock %}
 {% block script %}
     <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script>
-        document.querySelectorAll("li.td_item").forEach(function(e){
-            new bootstrap.Tooltip(e);
-        });
-    </script>
     <script>
         document.getElementById("append").addEventListener("click", function(){
             let form = new FormData();
