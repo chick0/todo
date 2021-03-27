@@ -6,7 +6,7 @@
             <input type="text" class="form-control" placeholder="할일" id="todo">
         </div>
 
-        <ul>
+        <ul style="border-radius:.25rem">
         {% for item in todo.items %}
             <li class="list-group-item td_item" data-id="{{ item.idx }}">
                 {{ item.text }}
