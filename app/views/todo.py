@@ -62,10 +62,11 @@ def append():
             })
         )
 
-    if len(request.form.get("todo", "")) != 0:
+    text = request.form.get("todo", "").strip()
+    if len(text) != 0:
         todo = Todo()
         todo.owner = member.idx
-        todo.text = request.form.get("todo")
+        todo.text = text
 
         db.session.add(todo)
         db.session.commit()
