@@ -82,7 +82,7 @@ def append():
             status=200,
             mimetype="application/json",
             response=dumps({
-                "alert": "추가 실패, 할 일을 입력해야 합니다"
+                "alert": "할 일을 입력해야 합니다"
             })
         )
 
