@@ -13,6 +13,13 @@
 
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
         <meta name="theme-color" content="#FFFFFF">
+        <link rel="shortcut icon" href="{{ url_for('favicon') }}">
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/icon192.png') }}" sizes="192x192">
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/icon256.png') }}" sizes="256x256">
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/icon512.png') }}" sizes="512x512">
+        <link rel="apple-touch-icon" sizes="192x192" href="{{ url_for('static', filename='img/icon192.png') }}">
+        <link rel="apple-touch-icon" sizes="256x256" href="{{ url_for('static', filename='img/icon256.png') }}">
+        <link rel="apple-touch-icon" sizes="512x512" href="{{ url_for('static', filename='img/icon512.png') }}">
     </head>
     <body>
         <div class="py-3">

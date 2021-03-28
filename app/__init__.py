@@ -29,6 +29,13 @@ def create_app():
         app.config['SECRET_KEY'] = token_bytes(32)
         open(".SECRET_KEY", mode="wb").write(app.config['SECRET_KEY'])
 
+    @app.route("/favicon.ico")
+    def favicon():
+        return send_file(
+            "static/img/favicon.ico",
+            mimetype="image/x-icon"
+        )
+
     @app.route("/robots.txt")
     def robots():
         return send_file(
