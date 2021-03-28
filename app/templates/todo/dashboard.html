@@ -6,19 +6,13 @@
             <input type="text" class="form-control" placeholder="할일" id="todo">
         </div>
 
-        <ul style="border-radius:.25rem">
-        {% for item in todo.items %}
-            <li class="list-group-item td_item" data-id="{{ item.idx }}">
-                {{ item.text }}
-            </li>
-        {% endfor %}
-        </ul>
+        <ul style="border-radius:.25rem" id="todo_display"></ul>
     </div>
 
     <div class="row py-5">
         <div class="btn-group">
-            <a class="btn btn-secondary" href="{{ url_for('todo.dashboard', page=todo.prev_num) }}">이전 페이지</a>
-            <a class="btn btn-secondary" href="{{ url_for('todo.dashboard', page=todo.next_num) }}">다음 페이지</a>
+            <a class="btn btn-secondary" id="prev">이전 페이지</a>
+            <a class="btn btn-secondary" id="next">다음 페이지</a>
         </div>
     </div>
 
@@ -33,33 +27,61 @@
 {% block script %}
     <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
     <script>
+        let page = {{ page }};
+        function render(){
+            var todo_display = document.getElementById("todo_display");
+            todo_display.innerHTML = "";
+
+            axios.get("{{ url_for('api.get') }}",{
+                params: {
+                    page: page
+                }
+            }).then(function(e){
+                page = e.data.page;
+
+                document.getElementById("prev").setAttribute("href", e.data.prev);
+                document.getElementById("next").setAttribute("href", e.data.next);
+
+                e.data.todo.forEach(function(item){
+                    var li = document.createElement("li");
+                    li.setAttribute("class", "list-group-item");
+                    li.setAttribute("data-idx", item.idx);
+                    li.appendChild(document.createTextNode(item.text));
+
+                    li.addEventListener("click", function(e){
+                        if(confirm("삭제하시겠습니까?")){
+                            axios.get("{{ url_for('api.pop') }}",{
+                                params: {
+                                    idx: e.target.dataset.idx
+                                }
+                            }).then(function(e){
+                                window.alert(e.data.alert);
+                                render();
+                            }).catch(function(e){
+                                window.alert(e.response.data.error);
+                            });
+                        }
+                    });
+
+                    todo_display.appendChild(li);
+                });
+            }).catch(function(e){
+                window.alert("투두를 불러오는 과정에서 오류가 발생했습니다");
+                console.log(e);
+            });
+        }
+        document.onready = render();
+
+
         document.getElementById("append").addEventListener("click", function(){
             let form = new FormData();
             form.append("todo", document.getElementById("todo").value);
 
-            axios.post("{{ url_for('todo.append') }}", form).then(function(e){
+            axios.post("{{ url_for('api.append') }}", form).then(function(e){
                 window.alert(e.data.alert);
-                window.location.reload();
+                render();
                 document.getElementById("todo").value = "";
             });
         });
-
-        const todo_items = document.querySelectorAll("li.td_item");
-        for(var key in Object.keys(todo_items)){
-            todo_items[key].addEventListener("click", function(e){
-                if(confirm("삭제하시겠습니까?")){
-                    axios.get("{{ url_for('todo.pop') }}",{
-                        params: {
-                            idx: e.target.dataset.id
-                        }
-                    }).then(function(e){
-                        window.alert(e.data.alert);
-                        window.location.reload();
-                    }).catch(function(e){
-                        window.alert(e.response.data.error);
-                    });
-                }
-            });
-        }
     </script>
 {% endblock %}
