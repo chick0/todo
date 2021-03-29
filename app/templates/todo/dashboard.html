@@ -30,7 +30,6 @@
         let page = {{ page }};
         function render(){
             var todo_display = document.getElementById("todo_display");
-            todo_display.innerHTML = "";
 
             axios.get("{{ url_for('api.get') }}",{
                 params: {
@@ -42,6 +41,7 @@
                 document.getElementById("prev").setAttribute("href", e.data.prev);
                 document.getElementById("next").setAttribute("href", e.data.next);
 
+                todo_display.innerHTML = "";
                 e.data.todo.forEach(function(item){
                     var li = document.createElement("li");
                     li.setAttribute("class", "list-group-item");
@@ -78,8 +78,7 @@
             form.append("todo", document.getElementById("todo").value);
 
             axios.post("{{ url_for('api.append') }}", form).then(function(e){
-                window.alert(e.data.alert);
-                render();
+                window.alert(e.data.alert); render();
                 document.getElementById("todo").value = "";
             });
         });
