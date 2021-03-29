@@ -13,20 +13,13 @@
     {% endif %}
         <form method="post">
             <div class="mb-3 row">
-                <label for="qrcode" class="col-sm-2 col-form-label">QR코드</label>
-                <div class="col-sm-10">
-                    <img id="qrcode" style="width:200px" src="{{ url_for('2fa.qrcode') }}">
-                </div>
-            </div>
-
-            <div class="mb-3 row">
                 <label for="otp_pin" class="col-sm-2 col-form-label">인증 토큰</label>
                 <div class="col-sm-10">
                     <input type="tel" class="form-control" id="otp_pin" name="otp_pin" required="required">
                 </div>
             </div>
             <br>
-            <button type="submit" class="btn btn-success btn-lg">활성화</button>
+            <button type="submit" class="btn btn-danger btn-lg">비활성화</button>
             <a class="btn btn-primary btn-lg" href="{{ url_for('todo.dashboard') }}">돌아가기</a>
         </form>
     </div>

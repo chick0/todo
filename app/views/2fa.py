@@ -4,6 +4,7 @@ from io import BytesIO
 from flask import Blueprint
 from flask import request, session
 from flask import redirect, url_for
+from flask import abort
 from flask import send_file
 from flask import render_template
 
@@ -23,9 +24,7 @@ bp = Blueprint(
 def get_secret():
     secret = session.get("2fa_secret", None)
     if secret is None:
-        secret = random_base32()
-        session['2fa_secret'] = secret
-
+        abort(400)
     return secret
 
 
@@ -55,7 +54,7 @@ def setup():
         return redirect(url_for("member.login", login="need"))
 
     if len(member.secret) != 0:
-        return redirect(url_for(".verify"))
+        return redirect(url_for(".delete"))
 
     if request.method == "GET":
         session['2fa_secret'] = random_base32()
@@ -88,10 +87,7 @@ def verify():
     if member is None:
         return redirect(url_for("member.login", login="need"))
 
-    if len(member.secret) == 0:
-        return redirect(url_for(".setup"))
-
-    if session.get("2fa_status", False):
+    if len(member.secret) == 0 or session.get("2fa_status", False):
         return redirect(url_for("todo.dashboard"))
 
     if request.method == "GET":
@@ -109,4 +105,36 @@ def verify():
             return redirect(url_for(".verify", e="fail"))
 
         session['2fa_status'] = True
+        return redirect(url_for("todo.dashboard"))
+
+
+@bp.route("/delete", methods=['GET', 'POST'])
+def delete():
+    member = Member.query.filter_by(
+        idx=session.get("user_idx", -1)
+    ).first()
+    if member is None:
+        return redirect(url_for("member.login", login="need"))
+
+    if len(member.secret) == 0:
+        return redirect(url_for(".setup"))
+
+    if request.method == "GET":
+        return render_template(
+            "2fa/delete.html"
+        )
+    elif request.method == "POST":
+        otp_pin = request.form.get("otp_pin", None)
+        if otp_pin is None:
+            return redirect(url_for(".delete", e="missing"))
+
+        result = TOTP(member.secret).verify(otp_pin)
+
+        if not result:
+            return redirect(url_for(".delete", e="fail"))
+
+        member.secret = ""
+        db.session.commit()
+
+        session['2fa_status'] = False
         return redirect(url_for("todo.dashboard"))
