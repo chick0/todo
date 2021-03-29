@@ -27,6 +27,9 @@ def dashboard():
     if member is None:
         return redirect(url_for("member.login", login="need"))
 
+    if len(member.secret) != 0 and not session.get("2fa_status", False):
+        return redirect(url_for("2fa.verify"))
+
     try:
         page = int(request.args.get("page", "1"))
 

@@ -35,6 +35,15 @@ def get():
             })
         )
 
+    if len(member.secret) != 0 and not session.get("2fa_status", False):
+        return Response(
+            status=401,
+            mimetype="application/json",
+            response=dumps({
+                "error": "요청 거부, 2단계 인증을 통과한 상태가 아닙니다"
+            })
+        )
+
     try:
         page = int(request.args.get("page", "1"))
 
@@ -77,6 +86,15 @@ def append():
             })
         )
 
+    if len(member.secret) != 0 and not session.get("2fa_status", False):
+        return Response(
+            status=401,
+            mimetype="application/json",
+            response=dumps({
+                "error": "요청 거부, 2단계 인증을 통과한 상태가 아닙니다"
+            })
+        )
+
     text = request.form.get("todo", "").strip()
     if len(text) != 0:
         todo = Todo()
@@ -112,6 +130,15 @@ def pop():
             mimetype="application/json",
             response=dumps({
                 "error": "인증 실패, 로그인이 필요합니다!"
+            })
+        )
+
+    if len(member.secret) != 0 and not session.get("2fa_status", False):
+        return Response(
+            status=401,
+            mimetype="application/json",
+            response=dumps({
+                "error": "요청 거부, 2단계 인증을 통과한 상태가 아닙니다"
             })
         )
 

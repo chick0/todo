@@ -56,6 +56,7 @@ def leave():
 def logout():
     try:
         del session['user_idx']
+        del session['email']
     except KeyError:
         pass
 
@@ -87,6 +88,11 @@ def login():
             return redirect(url_for(".login", login="unregistered"))
 
         session['user_idx'] = member.idx
+        session['email'] = email
+
+        if len(member.secret) != 0:
+            session['2fa_status'] = False
+            return redirect(url_for("2fa.verify"))
 
         return redirect(url_for("todo.dashboard"))
 
@@ -116,6 +122,7 @@ def register():
         member = Member()
         member.email = hashed_email
         member.password = hashed_password
+        member.secret = ""
 
         try:
             db.session.add(member)
@@ -133,7 +140,7 @@ def update():
 
     if request.method == "GET":
         return render_template(
-            "member/update.html"
+            "member/setup.html"
         )
     elif request.method == "POST":
         password = request.form.get("password", "")
