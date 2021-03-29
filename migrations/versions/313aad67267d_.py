@@ -21,7 +21,7 @@ def upgrade():
     op.create_table('member',
     sa.Column('idx', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=96), nullable=False),
-    sa.Column('password', sa.String(length=128), nullable=True),
+    sa.Column('password', sa.String(length=128), nullable=False),
     sa.Column('register', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('idx'),
     sa.UniqueConstraint('email'),

@@ -21,13 +21,18 @@ class Member(db.Model):
 
     password = db.Column(
         db.String(128),
-        nullable=True
+        nullable=False
     )
 
     register = db.Column(
         db.DateTime,
         nullable=False,
         default=func.now()
+    )
+
+    secret = db.Column(
+        db.String(32),
+        nullable=False,
     )
 
     def __repr__(self):
