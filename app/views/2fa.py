@@ -29,18 +29,6 @@ def get_secret():
     return secret
 
 
-@bp.route("/test")
-def test():
-    if session.get("user_idx", -1) == 1:
-        session['user_idx'] = 2
-        session['email'] = "movie@ch1ck.xyz"
-    else:
-        session['user_idx'] = 1
-        session['email'] = "chick_0@ch1ck.xyz"
-
-    return "end"
-
-
 @bp.route("/qrcode")
 def qrcode():
     email = session.get("email", None)
