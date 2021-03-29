@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
     <div class="row">
-        <h3 class="display-3">비밀번호 수정</h3>
+        <h3 class="display-3">비밀번호 변경</h3>
     {% if request.args.get("e") == "pws" %}
         <div class="alert alert-danger">
             <p class="mb-0">비밀번호가 너무 짧습니다</p>
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary btn-lg">수정하기</button>
+            <button type="submit" class="btn btn-primary btn-lg">변경하기</button>
         </form>
     </div>
 {% endblock %}
