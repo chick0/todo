@@ -15,15 +15,11 @@ bp = Blueprint(
 )
 
 
-def get_member():
-    return Member.query.filter_by(
-        idx=session.get("user_idx", -1)
-    ).first()
-
-
 @bp.route("")
 def dashboard():
-    member = get_member()
+    member = Member.query.filter_by(
+        idx=session.get("user_idx", -1)
+    ).first()
     if member is None:
         return redirect(url_for("member.login", login="need"))
 

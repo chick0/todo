@@ -17,15 +17,11 @@ bp = Blueprint(
 )
 
 
-def get_member():
-    return Member.query.filter_by(
+@bp.route("/todo", methods=['GET', 'POST', 'DELETE', 'PATCH'])
+def todo():
+    member = Member.query.filter_by(
         idx=session.get("user_idx", -1)
     ).first()
-
-
-@bp.route("/todo", methods=['GET', 'POST', 'DELETE', "PATCH"])
-def todo():
-    member = get_member()
     if member is None:
         return Response(
             status=401,
