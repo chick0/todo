@@ -17,7 +17,7 @@ bp = Blueprint(
 )
 
 
-@bp.route("/todo", methods=['GET', 'POST', 'DELETE', 'PATCH'])
+@bp.route("/todo", methods=['GET', 'POST', 'PATCH'])
 def todo():
     member = Member.query.filter_by(
         idx=session.get("user_idx", -1)
@@ -95,45 +95,6 @@ def todo():
                     "alert": "할 일을 입력해야 합니다"
                 })
             )
-    elif request.method == "DELETE":
-        try:
-            idx = int(request.args.get("idx", "-1"))
-
-            if idx <= 0:
-                raise ValueError
-        except ValueError:
-            return Response(
-                status=400,
-                mimetype="application/json",
-                response=dumps({
-                    "error": "잘못된 요청 입니다"
-                })
-            )
-
-        td = Todo.query.filter_by(
-            idx=idx,
-            owner=member.idx
-        ).first()
-
-        if td is None:
-            return Response(
-                status=404,
-                mimetype="application/json",
-                response=dumps({
-                    "error": "삭제할 투두를 찾지 못했습니다"
-                })
-            )
-
-        db.session.delete(td)
-        db.session.commit()
-
-        return Response(
-            status=200,
-            mimetype="application/json",
-            response=dumps({
-                "alert": "삭제 완료"
-            })
-        )
     elif request.method == "PATCH":
         try:
             idx = int(request.form.get("idx", "-1"))
@@ -166,10 +127,13 @@ def todo():
                 })
             )
         else:
+            db.session.delete(target)
+            db.session.commit()
+
             return Response(
                 status=200,
                 mimetype="application/json",
                 response=dumps({
-                    "alert": "할 일을 입력해야 합니다"
+                    "alert": "삭제 완료"
                 })
             )

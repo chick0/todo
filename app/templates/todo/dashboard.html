@@ -7,6 +7,9 @@
         </div>
 
         <ul style="border-radius:.25rem" id="todo_display"></ul>
+        <p>
+            <button class="btn btn-success" onclick="render();this.blur()">새로고침</button>
+        </p>
     </div>
 
     <div class="row py-5">
@@ -14,10 +17,6 @@
             <a class="btn btn-secondary" id="prev">이전 페이지</a>
             <a class="btn btn-secondary" id="next">다음 페이지</a>
         </div>
-        <p class="pt-1">
-            <button class="btn btn-success" onclick="render();this.blur()">새로고침</button>
-            <button class="btn btn-primary" onclick="setmode();this.blur()">모드변경</button>
-        </p>
     </div>
 
     <div class="row py-5">
@@ -31,20 +30,10 @@
 {% block script %}
     <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
     <script>
-        let mode = 0;  // 0:delete 1:edit
         let page = {{ page }};
 
-        function setmode(){
-            if(mode == 0){ mode = 1; }
-            else if(mode == 1){ mode = 0; }
-
-            if(mode == 0){ alert("삭제 모드 활성화"); }
-            if(mode == 1){ alert("수정 모드 활성화"); }
-
-            render();
-        }
         function render(){
-            var todo_display = document.getElementById("todo_display");
+            let todo_display = document.getElementById("todo_display");
 
             axios.get("{{ url_for('api.todo') }}",{
                 params: {
@@ -58,61 +47,55 @@
 
                 todo_display.innerHTML = "";
                 e.data.todo.forEach(function(item){
-                    var li = document.createElement("li");
+                    let li = document.createElement("li");
                     li.setAttribute("class", "list-group-item");
                     li.setAttribute("data-idx", item.idx);
                     li.appendChild(document.createTextNode(item.text));
 
                     function todoWork(e){
-                        if(mode == 0){
-                            if(confirm("삭제하시겠습니까?")){
-                                axios.delete("{{ url_for('api.todo') }}",{
-                                    params: {
-                                        idx: e.target.dataset.idx
-                                    }
-                                }).then(function(e){
-                                    window.alert(e.data.alert);
-                                    render();
-                                }).catch(function(e){
-                                    window.alert(e.response.data.error);
-                                });
-                            }
-                        }
-                        else if(mode == 1){
-                            e.target.removeEventListener("click", todoWork);
+                        e.target.removeEventListener("click", todoWork);
 
-                            var div = document.createElement("div");
-                            div.setAttribute("class", "input-group");
+                        let div = document.createElement("div");
+                        div.setAttribute("class", "input-group");
 
-                            var button = document.createElement("button");
-                            button.setAttribute("class", "btn btn-outline-secondary");
-                            button.setAttribute("data-idx", e.target.dataset.idx);
-                            button.appendChild(document.createTextNode("수정하기"));
-                            button.addEventListener("click", function(e){
-                                let todoElement = document.getElementById(`todo_edit_${e.target.dataset.idx}`);
-                                if(todoElement.value.length != 0){
-                                    let form = new FormData();
-                                    form.append("idx", e.target.dataset.idx);
-                                    form.append("todo", todoElement.value);
+                        let button = document.createElement("button");
+                        button.setAttribute("class", "btn btn-outline-primary");
+                        button.setAttribute("data-idx", e.target.dataset.idx);
+                        button.appendChild(document.createTextNode("수정하기"));
+                        button.addEventListener("click", function(e){
+                            let todoElement = document.getElementById(`todo_edit_${e.target.dataset.idx}`);
 
-                                    axios.patch("{{ url_for('api.todo') }}", form).then(function(e){
-                                        window.alert(e.data.alert); render();
-                                        todoElement.value = "";
-                                    }).catch(function(e){
-                                        window.alert(e.response.data.error);
-                                    });
-                                }
+                            let form = new FormData();
+                            form.append("idx", e.target.dataset.idx);
+                            form.append("todo", todoElement.value);
+
+                            axios.patch("{{ url_for('api.todo') }}", form).then(function(e){
+                                window.alert(e.data.alert); render();
+                                todoElement.value = "";
+                            }).catch(function(e){
+                                window.alert(e.response.data.error);
                             });
+                        });
 
-                            var input = document.createElement("input");
-                            input.setAttribute("type", "text");
-                            input.setAttribute("class", "form-control");
-                            input.setAttribute("id", `todo_edit_${e.target.dataset.idx}`);
+                        let input = document.createElement("input");
+                        input.setAttribute("type", "text");
+                        input.setAttribute("class", "form-control");
+                        input.setAttribute("id", `todo_edit_${e.target.dataset.idx}`);
+                        input.setAttribute("value", e.target.innerText);
 
-                            div.appendChild(button);
-                            div.appendChild(input);
-                            e.target.appendChild(div);
-                        }
+                        let reset = document.createElement("button");
+                        reset.setAttribute("class", "btn btn-danger");
+                        reset.setAttribute("data-idx", e.target.dataset.idx);
+                        reset.appendChild(document.createTextNode("지우기"));
+                        reset.addEventListener("click", function(e){
+                            let todoElement = document.getElementById(`todo_edit_${e.target.dataset.idx}`);
+                            todoElement.value = "";
+                        });
+
+                        div.appendChild(button);
+                        div.appendChild(input);
+                        div.appendChild(reset);
+                        e.target.appendChild(div);
                     }
                     li.addEventListener("click", todoWork);
 
