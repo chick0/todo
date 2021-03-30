@@ -140,7 +140,7 @@ def update():
 
     if request.method == "GET":
         return render_template(
-            "member/setup.html"
+            "member/update.html"
         )
     elif request.method == "POST":
         password = request.form.get("password", "")
