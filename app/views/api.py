@@ -23,7 +23,7 @@ def get_member():
     ).first()
 
 
-@bp.route("/todo", methods=['GET', 'POST', 'DELETE'])
+@bp.route("/todo", methods=['GET', 'POST', 'DELETE', "PATCH"])
 def todo():
     member = get_member()
     if member is None:
@@ -138,3 +138,42 @@ def todo():
                 "alert": "삭제 완료"
             })
         )
+    elif request.method == "PATCH":
+        try:
+            idx = int(request.form.get("idx", "-1"))
+        except ValueError:
+            idx = -1
+
+        target = Todo.query.filter_by(
+            idx=idx,
+            owner=member.idx
+        ).first()
+        if target is None:
+            return Response(
+                status=404,
+                mimetype="application/json",
+                response=dumps({
+                    "error": "삭제할 투두를 찾지 못했습니다"
+                })
+            )
+
+        text = request.form.get("todo", "").strip()
+        if len(text) != 0:
+            target.text = text
+            db.session.commit()
+
+            return Response(
+                status=200,
+                mimetype="application/json",
+                response=dumps({
+                    "alert": "수정 완료"
+                })
+            )
+        else:
+            return Response(
+                status=200,
+                mimetype="application/json",
+                response=dumps({
+                    "alert": "할 일을 입력해야 합니다"
+                })
+            )
