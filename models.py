@@ -64,4 +64,4 @@ class Todo(db.Model):
     )
 
     def __repr__(self):
-        return f"<Todo idx={self.idx}, owner={self.owner}>"
+        return f"<Todo idx={self.idx}>"
