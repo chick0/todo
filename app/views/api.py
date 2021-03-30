@@ -68,7 +68,8 @@ def get():
             "todo": [
                 dict(
                     idx=item.idx,
-                    text=item.text
+                    text=item.text,
+                    date=item.register.isoformat()
                 ) for item in todo.items]
         })
     )
