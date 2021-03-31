@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Blueprint
-from flask import request, session
+from flask import session
 from flask import redirect, url_for
 from flask import render_template
 
@@ -26,15 +26,6 @@ def dashboard():
     if len(member.secret) != 0 and not session.get("2fa_status", False):
         return redirect(url_for("2fa.verify"))
 
-    try:
-        page = int(request.args.get("page", "1"))
-
-        if page < 1:
-            page = 1
-    except ValueError:
-        page = 1
-
     return render_template(
-        "todo/dashboard.html",
-        page=page
+        "todo/dashboard.html"
     )

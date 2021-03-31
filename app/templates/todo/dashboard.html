@@ -14,8 +14,8 @@
 
     <div class="row py-5">
         <div class="btn-group">
-            <a class="btn btn-secondary" id="prev">이전 페이지</a>
-            <a class="btn btn-secondary" id="next">다음 페이지</a>
+            <button class="btn btn-secondary" id="prev">이전 페이지</button>
+            <button class="btn btn-secondary" id="next">다음 페이지</button>
         </div>
     </div>
 
@@ -30,7 +30,9 @@
 {% block script %}
     <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
     <script>
-        let page = {{ page }};
+        let page = 1;
+        let prev = 1;
+        let next = 1;
 
         function render(){
             let todo_display = document.getElementById("todo_display");
@@ -41,9 +43,8 @@
                 }
             }).then(function(e){
                 page = e.data.page;
-
-                document.getElementById("prev").setAttribute("href", e.data.prev);
-                document.getElementById("next").setAttribute("href", e.data.next);
+                prev = e.data.prev;
+                next = e.data.next;
 
                 todo_display.innerHTML = "";
                 e.data.todo.forEach(function(item){
@@ -71,7 +72,6 @@
 
                             axios.patch("{{ url_for('api.todo') }}", form).then(function(e){
                                 window.alert(e.data.alert); render();
-                                todoElement.value = "";
                             }).catch(function(e){
                                 window.alert(e.response.data.error);
                             });
@@ -101,6 +101,18 @@
 
                     todo_display.appendChild(li);
                 });
+
+                if(prev == null){
+                    document.getElementById("prev").disabled = "disabled";
+                } else {
+                    document.getElementById("prev").disabled = false;
+                }
+
+                if(next == null){
+                    document.getElementById("next").disabled = "disabled";
+                } else {
+                    document.getElementById("next").disabled = false;
+                }
             }).catch(function(e){
                 window.alert("투두를 불러오는 과정에서 오류가 발생했습니다");
                 console.log(e);
@@ -120,5 +132,8 @@
                 });
             }
         });
+
+        document.getElementById("prev").addEventListener("click", function(){ page = prev; render(); });
+        document.getElementById("next").addEventListener("click", function(){ page = next; render(); });
     </script>
 {% endblock %}

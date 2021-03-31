@@ -3,7 +3,6 @@ from json import dumps
 
 from flask import Blueprint
 from flask import request, session
-from flask import url_for
 from flask import Response
 
 from app import db
@@ -60,8 +59,8 @@ def todo():
             mimetype="application/json",
             response=dumps({
                 "page": page,
-                "prev": url_for("todo.dashboard", page=td.prev_num),
-                "next": url_for("todo.dashboard", page=td.next_num),
+                "prev": td.prev_num,
+                "next": td.next_num,
                 "todo": [
                     dict(
                         idx=item.idx,
