@@ -53,8 +53,14 @@
                     li.setAttribute("data-idx", item.idx);
                     li.appendChild(document.createTextNode(item.text));
 
+                    function todoClear(e){
+                        e.target.removeEventListener("click", todoClear);
+                        e.target.addEventListener("click", todoWork);
+                        e.target.innerText = e.target.childNodes[0].textContent;
+                    }
                     function todoWork(e){
                         e.target.removeEventListener("click", todoWork);
+                        e.target.addEventListener("click", todoClear);
 
                         let div = document.createElement("div");
                         div.setAttribute("class", "input-group");
@@ -62,7 +68,7 @@
                         let button = document.createElement("button");
                         button.setAttribute("class", "btn btn-outline-primary");
                         button.setAttribute("data-idx", e.target.dataset.idx);
-                        button.appendChild(document.createTextNode("수정하기"));
+                        button.appendChild(document.createTextNode("저장"));
                         button.addEventListener("click", function(e){
                             let todoElement = document.getElementById(`todo_edit_${e.target.dataset.idx}`);
 
@@ -77,24 +83,31 @@
                             });
                         });
 
+                        let del_btn = document.createElement("button");
+                        del_btn.setAttribute("class", "btn btn-outline-danger");
+                        del_btn.setAttribute("data-idx", e.target.dataset.idx);
+                        del_btn.appendChild(document.createTextNode("삭제"));
+                        del_btn.addEventListener("click", function(e){
+                            let form = new FormData();
+                            form.append("idx", e.target.dataset.idx);
+                            form.append("todo", "");
+
+                            axios.patch("{{ url_for('api.todo') }}", form).then(function(e){
+                                window.alert(e.data.alert); render();
+                            }).catch(function(e){
+                                window.alert(e.response.data.error);
+                            });
+                        });
+
                         let input = document.createElement("input");
                         input.setAttribute("type", "text");
                         input.setAttribute("class", "form-control");
                         input.setAttribute("id", `todo_edit_${e.target.dataset.idx}`);
                         input.setAttribute("value", e.target.innerText);
 
-                        let reset = document.createElement("button");
-                        reset.setAttribute("class", "btn btn-danger");
-                        reset.setAttribute("data-idx", e.target.dataset.idx);
-                        reset.appendChild(document.createTextNode("지우기"));
-                        reset.addEventListener("click", function(e){
-                            let todoElement = document.getElementById(`todo_edit_${e.target.dataset.idx}`);
-                            todoElement.value = "";
-                        });
-
                         div.appendChild(button);
+                        div.appendChild(del_btn);
                         div.appendChild(input);
-                        div.appendChild(reset);
                         e.target.appendChild(div);
                     }
                     li.addEventListener("click", todoWork);
