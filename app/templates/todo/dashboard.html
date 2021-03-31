@@ -51,6 +51,7 @@
                     let li = document.createElement("li");
                     li.setAttribute("class", "list-group-item");
                     li.setAttribute("data-idx", item.idx);
+                    li.setAttribute("data-date", item.date);
                     li.appendChild(document.createTextNode(item.text));
 
                     function todoClear(e){
