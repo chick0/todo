@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="row">
+        <h3 class="display-3">복구코드</h3>
+
+        <div class="row py-3" id="display"></div>
+
+        <p>
+            <button class="btn btn-success btn-lg" id="create">발급하기</button>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('todo.dashboard') }}">돌아가기</a>
+        </p>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+    <script>
+        document.getElementById("create").addEventListener("click", function(){
+            axios.get("{{ url_for('api.code') }}").then(function(e){
+                let code = document.createElement("code");
+                code.setAttribute("class", "lead");
+                code.appendChild(document.createTextNode(e.data.code));
+
+                document.getElementById("display").appendChild(code);
+            }).catch(function(){
+                window.alert("발급과정에서 오류가 발생했습니다");
+            });
+        });
+    </script>
+{% endblock %}

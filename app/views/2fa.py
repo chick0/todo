@@ -12,7 +12,7 @@ from qrcode import make
 from pyotp import TOTP, random_base32
 
 from app import db
-from models import Member
+from models import Member, Recovery
 
 bp = Blueprint(
     name=__name__.split(".")[-1],
@@ -134,7 +134,26 @@ def delete():
             return redirect(url_for(".delete", e="fail"))
 
         member.secret = ""
+        for recovery in Recovery.query.filter_by(owner=member.idx):
+            db.session.delete(recovery)
+
         db.session.commit()
 
         session['2fa_status'] = False
         return redirect(url_for("todo.dashboard"))
+
+
+@bp.route("/code")
+def code():
+    member = Member.query.filter_by(
+        idx=session.get("user_idx", -1)
+    ).first()
+    if member is None:
+        return redirect(url_for("member.login", login="need"))
+
+    if len(member.secret) == 0:
+        return redirect(url_for(".setup"))
+
+    return render_template(
+        "2fa/code.html"
+    )
