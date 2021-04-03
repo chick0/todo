@@ -65,25 +65,3 @@ class Todo(db.Model):
 
     def __repr__(self):
         return f"<Todo idx={self.idx}>"
-
-
-class Recovery(db.Model):
-    idx = db.Column(
-        db.Integer,
-        unique=True,
-        primary_key=True,
-        nullable=False
-    )
-
-    owner = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    code = db.Column(
-        db.String(128),
-        nullable=False
-    )
-
-    def __repr__(self):
-        return f"<Recovery idx={self.idx}>"

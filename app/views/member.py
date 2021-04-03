@@ -8,7 +8,7 @@ from flask import render_template
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from models import Member, Todo, Recovery
+from models import Member, Todo
 
 
 bp = Blueprint(
@@ -42,9 +42,6 @@ def leave():
 
                 for todo in Todo.query.filter_by(owner=member.idx).all():
                     db.session.delete(todo)
-
-                for recovery in Recovery.query.filter_by(owner=member.idx).all():
-                    db.session.delete(recovery)
 
                 db.session.commit()
 

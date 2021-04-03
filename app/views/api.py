@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 from json import dumps
-from hashlib import sha512
-from secrets import token_bytes
 
 from flask import Blueprint
 from flask import request, session
 from flask import Response
 
 from app import db
-from models import Member, Todo, Recovery
+from models import Member, Todo
 
 
 bp = Blueprint(
@@ -138,56 +136,3 @@ def todo():
                     "alert": "삭제 완료"
                 })
             )
-
-
-@bp.route("/code")
-def code():
-    member = Member.query.filter_by(
-        idx=session.get("user_idx", -1)
-    ).first()
-    if member is None:
-        return Response(
-            status=401,
-            mimetype="application/json",
-            response=dumps({
-                "error": "인증 실패, 로그인이 필요합니다!"
-            })
-        )
-
-    if len(member.secret) != 0 and not session.get("2fa_status", False):
-        return Response(
-            status=401,
-            mimetype="application/json",
-            response=dumps({
-                "error": "요청 거부, 2단계 인증을 통과한 상태가 아닙니다"
-            })
-        )
-
-    recovery = Recovery.query.filter_by(
-        owner=member.idx
-    ).all()
-
-    if len(recovery) < 8:
-        code_ = token_bytes(16).hex()
-
-        recovery = Recovery()
-        recovery.owner = member.idx
-        recovery.code = sha512(code_.encode()).hexdigest()
-        db.session.add(recovery)
-        db.session.commit()
-
-        return Response(
-            status=201,
-            mimetype="application/json",
-            response=dumps({
-                "code": code_
-            })
-        )
-
-    return Response(
-        status=200,
-        mimetype="application/json",
-        response=dumps({
-            "code": "복구코드는 8개 까지만 생성 가능합니다"
-        })
-    )
