@@ -131,6 +131,10 @@
                 window.alert("투두를 불러오는 과정에서 오류가 발생했습니다");
                 console.log(e);
             });
+
+            window.scrollTo({
+                top: 0, behavior: "smooth"
+            });
         }
         document.onready = render();
 
