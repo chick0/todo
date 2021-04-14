@@ -113,7 +113,7 @@ def todo():
                 })
             )
 
-        text = request.form.get("todo", "").strip()
+        text = request.form.get("todo", "").strip()[:1000]
         if len(text) != 0:
             target.text = text
             db.session.commit()
