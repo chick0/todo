@@ -30,7 +30,7 @@ def upgrade():
     op.create_table('todo',
     sa.Column('idx', sa.Integer(), nullable=False),
     sa.Column('owner', sa.Integer(), nullable=False),
-    sa.Column('register', sa.DateTime(), nullable=False),
+    sa.Column('register', sa.String(length=1000), nullable=False),
     sa.Column('text', sa.Text(), nullable=False),
     sa.PrimaryKeyConstraint('idx'),
     sa.UniqueConstraint('idx')

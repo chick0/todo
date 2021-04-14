@@ -59,7 +59,7 @@ class Todo(db.Model):
     )
 
     text = db.Column(
-        db.Text,
+        db.String(1000),
         nullable=False
     )
 
