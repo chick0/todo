@@ -70,7 +70,7 @@ def todo():
             })
         )
     elif request.method == "POST":
-        text = request.form.get("todo", "").strip()
+        text = request.form.get("todo", "").strip()[:1000]
         if len(text) != 0:
             td = Todo()
             td.owner = member.idx
