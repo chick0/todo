@@ -18,6 +18,26 @@ bp = Blueprint(
 )
 
 
+BLOCK_IP = [
+    '::1',
+    '127.0.0.1',
+    'localhost',
+    '255.255.255.0',
+]
+
+
+def get_ipaddr():
+    ip = request.headers.get("X-Forwarded-For", None)
+
+    if ip is None:
+        ip = request.headers.get("CF-Connecting-IP", None)
+
+    if ip is None:
+        ip = request.remote_addr
+
+    return ip
+
+
 @bp.route("/leave", methods=['GET', 'POST'])
 def leave():
     if session.get("user_idx", None) is None:
@@ -68,6 +88,10 @@ def login():
     if session.get("user_idx", None) is not None:
         return redirect(url_for("todo.dashboard"))
 
+    if get_ipaddr() in BLOCK_IP:
+        from flask import abort
+        abort(403)
+
     if request.method == "GET":
         return render_template(
             "member/login.html"
@@ -101,6 +125,10 @@ def login():
 def register():
     if session.get("user_idx", None) is not None:
         return redirect(url_for("todo.dashboard"))
+
+    if get_ipaddr() in BLOCK_IP:
+        from flask import abort
+        abort(403)
 
     if request.method == "GET":
         return render_template(
