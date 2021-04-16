@@ -115,7 +115,16 @@ def todo():
 
         text = request.form.get("todo", "").strip()[:1000]
         if len(text) != 0:
-            target.text = text
+            if text == "ㄲㅇ" or text == "끌올":
+                td = Todo()
+                td.owner = target.owner
+                td.text = f"({target.register.strftime('%Y.%m.%d')}) {target.text}"[:1000]
+
+                db.session.delete(target)
+                db.session.add(td)
+            else:
+                target.text = text
+
             db.session.commit()
 
             return Response(
