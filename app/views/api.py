@@ -122,18 +122,26 @@ def todo():
 
                 db.session.delete(target)
                 db.session.add(td)
+                db.session.commit()
+
+                return Response(
+                    status=200,
+                    mimetype="application/json",
+                    response=dumps({
+                        "alert": "끌올 완료"
+                    })
+                )
             else:
                 target.text = text
+                db.session.commit()
 
-            db.session.commit()
-
-            return Response(
-                status=200,
-                mimetype="application/json",
-                response=dumps({
-                    "alert": "수정 완료"
-                })
-            )
+                return Response(
+                    status=200,
+                    mimetype="application/json",
+                    response=dumps({
+                        "alert": "수정 완료"
+                    })
+                )
         else:
             db.session.delete(target)
             db.session.commit()
